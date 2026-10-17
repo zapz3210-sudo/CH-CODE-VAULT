@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>CinderHex Code Vault</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#0a0c12;--panel:#111622;--panel2:#171e2d;--line:#273247;--text:#f4f7ff;--muted:#a5b1c7;--accent:#ff623f;--accent2:#ff9a54;--good:#68e0ad;--bad:#ff7d87}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2132 0%,var(--bg) 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
@@ -20,6 +21,22 @@ button,input,textarea,select{font:inherit}button{border:1px solid var(--line);bo
 footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:20px 0 30px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#eafbf3;color:#10261d;border-radius:999px;padding:11px 17px;font-weight:800;box-shadow:0 8px 35px #0007;z-index:20;max-width:calc(100% - 24px);text-align:center;transition: opacity 0.3s; opacity: 1;}
 .toast.hidden{opacity: 0; pointer-events: none;}
+.hidden{display:none!important;}
+
+/* Auth Panel Styles */
+.auth-panel {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.auth-panel h2 { margin-top: 0; color: var(--accent2); }
+.auth-panel input { width: 100%; margin-bottom: 15px; }
+.auth-panel .inline-actions { display: flex; gap: 10px; justify-content: center; }
 
 /* Animations */
 @keyframes shake {
@@ -34,12 +51,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;paddin
   100% {background-color: var(--bg);}
 }
 .anim-flash { animation: flashScreen 0.4s ease-out; }
-.particle {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  font-size: 24px;
-}
+.particle { position: fixed; pointer-events: none; z-index: 9999; font-size: 24px; }
 @keyframes floatUp {
   0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
   100% { opacity: 0; transform: translateY(-120px) scale(1.5) rotate(45deg); }
@@ -53,24 +65,41 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;paddin
 <body>
 <header><div class="wrap top">
   <div class="brand"><div class="logo">CH</div><span>CinderHex <span style="color:var(--accent2)">Code Vault</span></span></div>
-  <a href="https://www.youtube.com/@CinderHex_YT" target="_blank"><button class="primary">YouTube</button></a>
+  <button id="authBtn" class="primary hidden">Log Out</button>
 </div></header>
-<main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">Creator tools • Community codes</div>
-    <h1>Find a code.<br><span>Copy. Create.</span></h1>
-    <p>A clean, static vault for CinderHex codes. Search the collection, copy an API script with one click, and drop it straight into Bloxd.io.</p>
-    <div class="toolbar">
-      <input id="search" class="field search" type="search" placeholder="Search codes, titles, or categories…" aria-label="Search codes">
-      <select id="categoryFilter" class="field" aria-label="Filter by category"><option value="">All categories</option></select>
-    </div>
-    <div class="pills"><span class="pill" id="codeTotal">0 codes</span><span class="pill">One-click copy</span><span class="pill">Secure</span></div>
-  </section>
-  <section id="codeGrid" class="grid" aria-live="polite"></section>
-</main>
-<footer><div class="wrap">CinderHex Code Vault · Static Secure Edition.</div></footer>
 
+<main class="wrap">
+  <!-- Supabase Login Gate -->
+  <div id="authSection" class="auth-panel">
+    <h2>Vault Authentication</h2>
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Sign in to access CinderHex's private scripts.</p>
+    <input type="email" id="emailInput" class="field" placeholder="Email Address" required>
+    <input type="password" id="passwordInput" class="field" placeholder="Password" required>
+    <div class="inline-actions">
+      <button class="quiet" id="signUpBtn">Sign Up</button>
+      <button class="primary" id="logInBtn">Log In</button>
+    </div>
+  </div>
+
+  <!-- Hidden Vault Content -->
+  <div id="vaultMain" class="hidden">
+    <section class="hero">
+      <div class="eyebrow">Creator tools • Community codes</div>
+      <h1>Find a code.<br><span>Copy. Create.</span></h1>
+      <p>A clean, authenticated vault for CinderHex codes. Search the collection, copy an API script with one click, and drop it straight into Bloxd.io.</p>
+      <div class="toolbar">
+        <input id="search" class="field search" type="search" placeholder="Search codes, titles, or categories…" aria-label="Search codes">
+        <select id="categoryFilter" class="field" aria-label="Filter by category"><option value="">All categories</option></select>
+      </div>
+      <div class="pills"><span class="pill" id="codeTotal">0 codes</span><span class="pill">One-click copy</span><span class="pill">Secure</span></div>
+    </section>
+    <section id="codeGrid" class="grid" aria-live="polite"></section>
+  </div>
+</main>
+
+<footer><div class="wrap">CinderHex Code Vault · Supabase Authenticated Edition.</div></footer>
 <div id="toast" class="toast hidden" role="status"></div>
+
 <script>
 (() => {
   "use strict";
@@ -78,543 +107,27 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;paddin
   let toastTimer;
 
   // --------------------------------------------------------
+  // SUPABASE CONFIGURATION
+  // --------------------------------------------------------
+  const supabaseUrl = 'YOUR_SUPABASE_URL_HERE'; // <-- PASTE YOUR URL HERE
+  const supabaseKey = 'sb_publishable_PhE6B6xWU_Ozir2vZ_aoMQ_68-fqo2n';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  // --------------------------------------------------------
   // THE VAULT DATABASE
-  // Add new scripts directly to this array.
   // --------------------------------------------------------
   const codes = [
     {
-      id: "blub-entity-script",
-      title: "Blub Bacteria Mob",
-      category: "Custom Entities",
-      description: "A custom tameable bacteria mob. Drop rocks to spawn, use glowing mushrooms to tame. Features idle, follow, flee, and custom death animations.",
-      code: `// WORLD
-var parts = [
-  [{"blockName":"Cyan Glass","size":[0.75,0.75,1]},[-0.0025,0.25,-0.1225],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.7,0.7,0.95]},[-0.0075,0.265,-0.1225],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Black Concrete","size":[0.14,0.04,0.26]},[-0.1725,0.58,-0.4975],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Black Concrete","size":[0.14,0.04,0.26]},[0.1675,0.58,-0.4975],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Black Concrete","size":[0.14,0.04,0.26]},[-0.0125,0.48,-0.4975],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.25,0.25]},[0.2525,0,-0.3725],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.25,0.25]},[-0.2475,0,-0.3725],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.25,0.25]},[-0.2475,0,0.1275],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.25,0.25]},[0.2525,0,0.1275],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.27,0.5,0.25]},[0.1275,1,-0.2475],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.5,0.25]},[-0.1725,1,-0.2475],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Block of Lapis Lazuli","size":[0.15,0.4,0.02]},[0.1275,1.05,-0.3825],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Block of Lapis Lazuli","size":[0.15,0.4,0.02]},[-0.1725,1.05,-0.3825],[0,0,0],"BloxdBlock"],
-  [{"blockName":"Ice","size":[0.25,0.25,0.25]},[0.0025,0.5,0.5025],[0,0,0],"BloxdBlock"]
-];
-
-var activeBlubs = [];
-var lastTickTime = Date.now();
-var clickDebounce = {};
-
-function spawnBlub(id, cx, cy, cz) {
-  var created = [];
-  try {
-    for (var i = 0; i < parts.length; i++) {
-      var opts = Object.assign({ pointable: true }, parts[i][0]);
-      var meshId = api.attemptCreateMeshEntity(parts[i][3] || "Box", opts);
-      if (meshId) created.push(meshId);
-    }
-    
-    var groundY = cy;
-    for (var y = Math.floor(cy) + 5; y >= Math.floor(cy) - 24; y--) {
-      try {
-        var b = api.getBlock(Math.floor(cx), y, Math.floor(cz));
-        if (b && b !== "Air" && b !== "Water" && b !== "Lava") {
-          groundY = y + 1;
-          break;
-        }
-      } catch(e) {}
-    }
-
-    activeBlubs.push({
-      ids: created,
-      hp: 3,
-      state: "patrol",
-      owner: null,
-      nameTagId: null,
-      cx: cx,
-      cz: cz,
-      curX: cx,
-      curZ: cz,
-      cy: groundY,
-      fleeDir: [0, 1],
-      fleeTimer: 0,
-      flashUntil: 0,
-      isFlashing: false,
-      facingAngle: 0,
-      animCycle: 0,
-      deathTime: 0,
-      start: Date.now()
-    });
-    
-    if (typeof api.playClientSound === "function") {
-      api.playClientSound(id, "levelup", 1.0, 1.2);
-    }
-    api.sendMessage(id, "A wild Blub spawned!", {color: "lime"});
-  } catch (e) {
-    api.sendMessage(id, "Hit mesh limit.", {color: "red"});
+      id: "lightning-sword-script",
+      title: "Thunder-God Lightning Sword",
+      category: "Custom Weapons",
+      description: "Gold Sword right-click logic with explosive particle knockback and lingering fire. Replaces the Blub script.",
+      code: `function onRightClick(player, item) {
+  if(item.name === 'Gold Sword') {
+    spawnExplosion(player.x, player.y, player.z);
+    applyKnockback();
   }
-}
-
-function isRock(item) {
-  if (!item) return false;
-  var name = typeof item === "string" ? item : (item.name || "");
-  var low = name.toLowerCase();
-  return low === "stone" || low === "cobblestone" || low === "gravel";
-}
-
-onPlayerDropItem = (id, x, y, z, item, amount, slot) => {
-  if (isRock(item)) {
-    spawnBlub(id, x, y, z);
-    try { api.removeItemName(id, typeof item === "string" ? item : item.name, 1); } catch(e) {}
-    return "preventDrop"; 
-  }
-};
-
-onPlayerChat = (id, msg) => {
-  var low = (msg || "").trim().toLowerCase();
-  
-  if (low === "!blub") {
-    var pos = api.getPosition(id);
-    if (!pos) return;
-    
-    var look = api.getPlayerFacingInfo(id);
-    var dir = (look && look.dir) ? look.dir : [0, 0, -1];
-    var len = Math.hypot(dir[0], dir[2]);
-    var dx = len > 0.01 ? dir[0] / len : 0;
-    var dz = len > 0.01 ? dir[2] / len : 1;
-
-    var cx = pos[0] + dx * 4;
-    var cz = pos[2] + dz * 4;
-    
-    spawnBlub(id, cx, pos[1], cz);
-    return "preventChat";
-  }
-
-  if (low === "!clearblubs") {
-    for (var b = 0; b < activeBlubs.length; b++) {
-      for (var i = 0; i < activeBlubs[b].ids.length; i++) {
-        var mId = activeBlubs[b].ids[i];
-        try { api.removeMeshEntity(mId); } catch(e) {}
-        try { api.deleteMeshEntity(mId); } catch(e) {}
-        try { api.destroyEntity(mId); } catch(e) {}
-      }
-      if (activeBlubs[b].nameTagId) {
-        try { api.removeMeshEntity(activeBlubs[b].nameTagId); } catch(e) {}
-      }
-    }
-    activeBlubs = [];
-    api.sendMessage(id, "Cleared all Blubs.", {color: "lime"});
-    return "preventChat";
-  }
-};
-
-function tryHitBlub(id, targetEId, tx, ty, tz, isAltAction) {
-  var now = Date.now();
-  if (now - (clickDebounce[id] || 0) < 200) return;
-  clickDebounce[id] = now;
-
-  var hitIdx = -1;
-
-  if (targetEId) {
-    for (var b = 0; b < activeBlubs.length; b++) {
-      if (activeBlubs[b].ids.indexOf(targetEId) !== -1 || activeBlubs[b].nameTagId === targetEId) {
-        hitIdx = b;
-        break;
-      }
-    }
-  }
-
-  if (hitIdx === -1) {
-    var pPos = api.getPosition(id);
-    var look = api.getPlayerFacingInfo(id);
-    
-    if (pPos && look && look.dir) {
-      var camX = (look.camPos || pPos)[0];
-      var camY = (look.camPos || pPos)[1];
-      if (!look.camPos) camY += 1.5; 
-      var camZ = (look.camPos || pPos)[2];
-
-      for (var step = 0; step <= 4; step += 0.5) {
-        var hx = camX + look.dir[0] * step;
-        var hy = camY + look.dir[1] * step;
-        var hz = camZ + look.dir[2] * step;
-
-        for (var idx = 0; idx < activeBlubs.length; idx++) {
-          var blubCheck = activeBlubs[idx];
-          var dist = Math.sqrt(
-            Math.pow(hx - blubCheck.curX, 2) + 
-            Math.pow(hy - (blubCheck.cy + 0.5), 2) + 
-            Math.pow(hz - blubCheck.curZ, 2)
-          );
-          if (dist <= 1.2) {
-            hitIdx = idx;
-            break;
-          }
-        }
-        if (hitIdx !== -1) break;
-      }
-    }
-  }
-
-  if (hitIdx !== -1) {
-    var blub = activeBlubs[hitIdx];
-    if (blub.state === "dying") return;
-
-    var held = api.getHeldItem(id);
-    var heldName = held ? (typeof held === "string" ? held : (held.name || "")) : "";
-
-    // --- TAMING LOGIC ---
-    if (isAltAction && heldName.toLowerCase() === "glowing mushroom") {
-      if (blub.owner !== id) {
-        blub.owner = id;
-        blub.state = "follow";
-        blub.hp = 3; 
-        
-        var playerName = api.getEntityName(id) || "Player";
-
-        try {
-          api.playParticleEffect({
-            pos1: [blub.curX - 0.5, blub.cy + 0.5, blub.curZ - 0.5],
-            pos2: [blub.curX + 0.5, blub.cy + 1.5, blub.curZ + 0.5],
-            texture: "glint",
-            minLifeTime: 0.5, maxLifeTime: 1.2,
-            minSize: 0.4, maxSize: 0.7,
-            minEmitPower: 1.0, maxEmitPower: 3.0,
-            manualEmitCount: 25,
-            dir1: [-1.0, 0.5, -1.0],
-            dir2: [1.0, 2.5, 1.0],
-            gravity: [0, -1.5, 0],
-            velocityGradients: [{timeFraction: 0, factor: 1, factor2: 1}],
-            colorGradients: [{timeFraction: 0, minColor: [255, 50, 100, 1], maxColor: [255, 120, 150, 1]}],
-            blendMode: 1
-          });
-          if (typeof api.playClientSound === "function") {
-            api.playClientSound(id, "orb", 1.0, 1.5);
-          }
-        } catch(e) {}
-
-        if (blub.nameTagId) {
-          try { api.removeMeshEntity(blub.nameTagId); } catch(e) {}
-        }
-        try {
-          blub.nameTagId = api.attemptCreateMeshEntity("Text", { text: playerName + "'s Blub", size: 0.8, color: "cyan" });
-        } catch(e) {}
-
-        try { api.removeItemName(id, typeof held === "string" ? held : held.name, 1); } catch(e) {}
-        api.sendMessage(id, "You tamed a Blub!", {color: "lime"});
-      }
-      return;
-    }
-
-    // --- DAMAGE LOGIC ---
-    blub.hp--;
-    blub.flashUntil = Date.now() + 250;
-
-    var actPos = api.getPosition(id);
-    if (actPos) {
-      var dx = blub.curX - actPos[0];
-      var dz = blub.curZ - actPos[2];
-      var len = Math.hypot(dx, dz);
-      if (len > 0) {
-        blub.fleeDir = [dx / len, dz / len];
-      }
-    }
-
-    if (blub.hp <= 0) {
-      blub.state = "dying";
-      blub.deathTime = Date.now();
-
-      try {
-        api.sendFlyingMiddleMessage(id, [{str: "your a heartless monster", style: {color: "red", fontWeight: "bold", fontSize: "28px"}}], 45);
-      } catch(e) {}
-      try {
-        if (typeof api.playClientSound === "function") api.playClientSound(id, "bass", 1.0, 0.7);
-      } catch(e) {}
-
-    } else {
-      if (blub.state !== "flee") {
-        blub.cx = blub.curX;
-        blub.cz = blub.curZ;
-      }
-      blub.state = "flee";
-      blub.fleeTimer = Date.now() + 2500;
-      
-      try {
-        api.playParticleEffect({
-          pos1: [blub.curX - 0.4, blub.cy + 0.2, blub.curZ - 0.4],
-          pos2: [blub.curX + 0.4, blub.cy + 0.8, blub.curZ + 0.4],
-          texture: "glint",
-          minLifeTime: 0.2, maxLifeTime: 0.5,
-          minSize: 0.2, maxSize: 0.4,
-          minEmitPower: 1, maxEmitPower: 2,
-          manualEmitCount: 10,
-          dir1: [-0.5, 0.5, -0.5],
-          dir2: [0.5, 1.5, 0.5],
-          gravity: [0, -1.5, 0],
-          velocityGradients: [{timeFraction: 0, factor: 1, factor2: 1}],
-          colorGradients: [{timeFraction: 0, minColor: [255, 50, 50, 1], maxColor: [255, 100, 100, 1]}],
-          blendMode: 1
-        });
-        if (typeof api.playClientSound === "function") {
-          api.playClientSound(id, "hit", 1.0, 1.3);
-        }
-      } catch(e) {}
-    }
-  } else {
-    var held = api.getHeldItem(id);
-    if (isRock(held) && !isAltAction) {
-      if (typeof tx === "number") {
-        spawnBlub(id, tx, ty + 1, tz);
-        try { api.removeItemName(id, typeof held === "string" ? held : held.name, 1); } catch(e) {}
-      }
-    }
-  }
-}
-
-onPlayerClick = (id, alt, x, y, z, block, targetEId) => { tryHitBlub(id, targetEId, x, y, z, alt); };
-onPlayerAltAction = (id, x, y, z, block, targetEId) => { tryHitBlub(id, targetEId, x, y, z, true); };
-onPlayerAttemptAltAction = (id, x, y, z, block, targetEId) => { tryHitBlub(id, targetEId, x, y, z, true); };
-
-tick = (dt) => {
-  var now = Date.now();
-  var dtSec = (now - lastTickTime) / 1000;
-  if (dtSec > 0.1) dtSec = 0.1;
-  lastTickTime = now;
-
-  for (var b = activeBlubs.length - 1; b >= 0; b--) {
-    var blub = activeBlubs[b];
-    var t = (now - blub.start) / 1000;
-
-    var shouldFlash = now < blub.flashUntil;
-    if (shouldFlash && !blub.isFlashing) {
-      blub.isFlashing = true;
-      for (var i = 0; i < parts.length; i++) {
-        if (!blub.ids[i]) continue;
-        var opts = Object.assign({ pointable: true }, parts[i][0], { blockName: "Red Concrete" });
-        try { api.updateMeshEntity(blub.ids[i], parts[i][3] || "Box", opts); } catch(e) {}
-      }
-    } else if (!shouldFlash && blub.isFlashing) {
-      blub.isFlashing = false;
-      for (var i = 0; i < parts.length; i++) {
-        if (!blub.ids[i]) continue;
-        var opts = Object.assign({ pointable: true }, parts[i][0]);
-        try { api.updateMeshEntity(blub.ids[i], parts[i][3] || "Box", opts); } catch(e) {}
-      }
-    }
-
-    if (blub.state === "dying") {
-      var dT = (now - blub.deathTime) / 1000;
-      var deathDur = 1.4; 
-
-      if (dT >= deathDur) {
-        try {
-          api.playParticleEffect({
-            pos1: [blub.curX - 0.8, blub.cy, blub.curZ - 0.8],
-            pos2: [blub.curX + 0.8, blub.cy + 1.5, blub.curZ + 0.8],
-            texture: "drift",
-            minLifeTime: 0.6, maxLifeTime: 1.2,
-            minSize: 0.6, maxSize: 1.2,
-            minEmitPower: 0.5, maxEmitPower: 1.5,
-            manualEmitCount: 60,
-            dir1: [-1.0, 0.0, -1.0],
-            dir2: [1.0, 2.0, 1.0],
-            gravity: [0, 0, 0],
-            velocityGradients: [{timeFraction: 0, factor: 1, factor2: 1}],
-            colorGradients: [{timeFraction: 0, minColor: [100, 100, 100, 1], maxColor: [180, 180, 180, 1]}],
-            blendMode: 1
-          });
-          if (typeof api.playClientSound === "function") {
-            api.playClientSound(null, "fizz", 1.0, 0.5);
-          }
-        } catch(e) {}
-
-        for (var i = 0; i < blub.ids.length; i++) {
-          var mId = blub.ids[i];
-          try { api.setPosition(mId, 0, -5000, 0); } catch(e) {}
-          try { api.updateMeshEntity(mId, parts[i][3] || "Box", { size: 0.001, pointable: false }); } catch(e) {}
-          try { api.removeMeshEntity(mId); } catch(e) {}
-          try { api.destroyEntity(mId); } catch(e) {}
-        }
-        
-        if (blub.nameTagId) {
-          try { api.setPosition(blub.nameTagId, 0, -5000, 0); } catch(e) {}
-          try { api.removeMeshEntity(blub.nameTagId); } catch(e) {}
-        }
-        
-        activeBlubs.splice(b, 1);
-        continue;
-      }
-
-      var tiltProg = Math.min(1.0, dT / (deathDur * 0.7)); 
-      var tiltAngle = tiltProg * (Math.PI / 2); 
-      var cosT = Math.cos(tiltAngle);
-      var sinT = Math.sin(tiltAngle);
-      var cosA = Math.cos(blub.facingAngle || 0);
-      var sinA = Math.sin(blub.facingAngle || 0);
-
-      for (var i = 0; i < parts.length; i++) {
-        if (!blub.ids[i]) continue;
-        var mId = blub.ids[i];
-        var baseP = parts[i][1];
-        var baseR = parts[i][2];
-
-        var lx = baseP[0], ly = baseP[1], lz = baseP[2];
-        var rx = baseR[0], ry = baseR[1], rz = baseR[2];
-
-        var pivotY = 0.25; 
-        var shiftedY = ly - pivotY;
-
-        var newLocalX = lx * cosT + shiftedY * sinT;
-        var newLocalY = -lx * sinT + shiftedY * cosT;
-        newLocalY += pivotY; 
-
-        if (tiltProg === 1.0) {
-            var sinkProg = Math.min(1.0, (dT - (deathDur * 0.7)) / (deathDur * 0.3));
-            newLocalY -= (sinkProg * 0.15); 
-        }
-
-        var rotX = newLocalX * cosA + lz * sinA;
-        var rotZ = -newLocalX * sinA + lz * cosA;
-
-        try {
-          api.setPosition(mId, blub.curX + rotX, blub.cy + newLocalY, blub.curZ + rotZ);
-          api.setEntityRotation(mId, rx, ry + (blub.facingAngle || 0), rz - tiltAngle);
-        } catch(e) {}
-      }
-      
-      if (blub.nameTagId) {
-        try { 
-          api.setPosition(blub.nameTagId, blub.curX, blub.cy + 1.6 - (tiltProg * 0.5), blub.curZ); 
-          api.setEntityRotation(blub.nameTagId, 0, (blub.facingAngle || 0), 0);
-        } catch(e) {}
-      }
-      continue; 
-    }
-
-    var gY = blub.cy;
-    for (var y = Math.floor(blub.cy) + 2; y >= Math.floor(blub.cy) - 5; y--) {
-      try {
-        var block = api.getBlock(Math.floor(blub.curX), y, Math.floor(blub.curZ));
-        if (block && block !== "Air" && block !== "Water" && block !== "Lava") {
-          gY = y + 1;
-          break;
-        }
-      } catch(e) {}
-    }
-    blub.cy += (gY - blub.cy) * 0.15;
-
-    var angle, walkCycle;
-
-    if (blub.state === "flee") {
-      if (now > blub.fleeTimer) {
-        blub.state = blub.owner ? "follow" : "patrol";
-        blub.start = now; 
-      } else {
-        var fleeSpeed = 5.5;
-        blub.cx += blub.fleeDir[0] * fleeSpeed * dtSec;
-        blub.cz += blub.fleeDir[1] * fleeSpeed * dtSec;
-        blub.curX = blub.cx;
-        blub.curZ = blub.cz;
-        
-        angle = Math.atan2(blub.fleeDir[0], blub.fleeDir[1]) + Math.PI; 
-        blub.animCycle += fleeSpeed * 6 * dtSec;
-        walkCycle = blub.animCycle;
-      }
-    } else if (blub.state === "follow") {
-      var speed = 3.5;
-      var ownerPos = api.getPosition(blub.owner);
-      
-      if (ownerPos) {
-        var dx = ownerPos[0] - blub.curX;
-        var dz = ownerPos[2] - blub.curZ;
-        var dist = Math.hypot(dx, dz);
-
-        if (dist > 2.5) {
-          if (dist > 10) speed = 6.5; 
-          blub.cx += (dx / dist) * speed * dtSec;
-          blub.cz += (dz / dist) * speed * dtSec;
-          angle = Math.atan2(dx, dz) + Math.PI;
-          blub.curX = blub.cx;
-          blub.curZ = blub.cz;
-          blub.animCycle += speed * 6 * dtSec;
-          walkCycle = blub.animCycle;
-        } else {
-          angle = Math.atan2(dx, dz) + Math.PI;
-          blub.animCycle = 0;
-          walkCycle = 0;
-        }
-      } else {
-        blub.state = "patrol";
-        walkCycle = 0;
-        angle = blub.facingAngle || 0;
-      }
-    } else if (blub.state === "patrol") {
-      var pSpeed = 1.2;
-      var pRadius = 3.5;
-      var offsetX = Math.sin(t * pSpeed) * pRadius;
-      var offsetZ = Math.sin(t * pSpeed * 0.5) * pRadius * 2;
-      var velX = Math.cos(t * pSpeed) * pRadius * pSpeed;
-      var velZ = Math.cos(t * pSpeed * 0.5) * pRadius * pSpeed;
-
-      blub.curX = blub.cx + offsetX;
-      blub.curZ = blub.cz + offsetZ;
-      angle = Math.atan2(velX, velZ) + Math.PI; 
-      blub.animCycle = t * pSpeed * 6;
-      walkCycle = blub.animCycle;
-    }
-
-    blub.facingAngle = angle;
-
-    var cosA = Math.cos(angle);
-    var sinA = Math.sin(angle);
-
-    var swing = Math.sin(walkCycle) * 0.25;
-    var bob = Math.abs(Math.sin(walkCycle)) * 0.12;
-    var tailWag = Math.sin(walkCycle * 1.5) * 0.5;
-
-    for (var i = 0; i < parts.length; i++) {
-      if (!blub.ids[i]) continue;
-      var mId = blub.ids[i];
-      var baseP = parts[i][1];
-      var baseR = parts[i][2];
-
-      var lx = baseP[0], ly = baseP[1], lz = baseP[2];
-      var rx = baseR[0], ry = baseR[1], rz = baseR[2];
-
-      if (i === 5 || i === 7) {
-        lz += swing; 
-        rx += swing;
-      } else if (i === 6 || i === 8) {
-        lz -= swing; 
-        rx -= swing;
-      } else if (i === 13) {
-        ly += bob; 
-        ry += tailWag;
-      } else {
-        ly += bob;
-      }
-
-      var rotX = lx * cosA + lz * sinA;
-      var rotZ = -lx * sinA + lz * cosA;
-
-      try {
-        api.setPosition(mId, blub.curX + rotX, blub.cy + ly, blub.curZ + rotZ);
-        api.setEntityRotation(mId, rx, ry + angle, rz);
-      } catch(e) {}
-    }
-    
-    if (blub.nameTagId) {
-      try { 
-        api.setPosition(blub.nameTagId, blub.curX, blub.cy + 1.6, blub.curZ); 
-        api.setEntityRotation(blub.nameTagId, 0, angle, 0);
-      } catch(e) {}
-    }
-  }
-};`
+}`
     }
   ];
 
@@ -624,7 +137,54 @@ tick = (dt) => {
     $("toast").textContent = message; $("toast").classList.remove("hidden");
     clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2400);
   }
-  
+
+  // --- AUTHENTICATION LOGIC ---
+  async function checkUser() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      $("authSection").classList.add("hidden");
+      $("vaultMain").classList.remove("hidden");
+      $("authBtn").classList.remove("hidden");
+      render(); // Load vault when logged in
+    } else {
+      $("authSection").classList.remove("hidden");
+      $("vaultMain").classList.add("hidden");
+      $("authBtn").classList.add("hidden");
+    }
+  }
+
+  $("signUpBtn").addEventListener("click", async () => {
+    const email = $("emailInput").value;
+    const password = $("passwordInput").value;
+    if (!email || !password) return notify("Enter email and password!");
+    
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) notify("Error: " + error.message);
+    else notify("Account created! You can now log in.");
+  });
+
+  $("logInBtn").addEventListener("click", async () => {
+    const email = $("emailInput").value;
+    const password = $("passwordInput").value;
+    if (!email || !password) return notify("Enter email and password!");
+    
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) notify("Error: " + error.message);
+    else {
+      notify("Logged in securely.");
+      checkUser();
+    }
+  });
+
+  $("authBtn").addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    $("emailInput").value = "";
+    $("passwordInput").value = "";
+    checkUser();
+    notify("Logged out.");
+  });
+
+  // --- VAULT UI & ANIMATION LOGIC ---
   function spawnParticles(x, y, emoji, count, animName) {
     for(let i=0; i<count; i++) {
         const el = document.createElement('div');
@@ -651,9 +211,7 @@ tick = (dt) => {
         spawnParticles(x, y, '🕷️', 8, 'crawlDown');
     } else if (t.includes('blub') || t.includes('water')) {
         spawnParticles(x, y, '💧', 6, 'floatUp');
-    } else if (t.includes('time')) {
-        spawnParticles(x, y, '⏳', 4, 'floatUp');
-    } else if (t.includes('explosion') || t.includes('trident') || t.includes('golem')) {
+    } else if (t.includes('explosion') || t.includes('sword')) {
         document.body.classList.add('anim-shake');
         setTimeout(() => document.body.classList.remove('anim-shake'), 300);
         spawnParticles(x, y, '💥', 5, 'floatUp');
@@ -681,7 +239,7 @@ tick = (dt) => {
         <div class="card-top"><div><h2>${esc(c.title)}</h2><div class="category">${esc(c.category || "Other")}</div></div></div>
         <p class="description">${esc(c.description || "No description provided.")}</p>
         <div class="code-box" id="code-${esc(c.id)}">${esc(c.code)}</div>
-        <div class="card-bottom"><span class="count"></span><button class="primary" data-copy="${esc(c.id)}"><span aria-hidden="true">▢</span> Copy code</button></div>
+        <div class="card-bottom"><button class="primary" data-copy="${esc(c.id)}"><span aria-hidden="true">▢</span> Copy code</button></div>
       </article>`).join("");
   }
 
@@ -711,8 +269,8 @@ tick = (dt) => {
 
   $("search").addEventListener("input",render); $("categoryFilter").addEventListener("change",render);
   
-  // Initial Load
-  render();
+  // Run auth check on page load
+  checkUser();
 })();
 </script>
 </body>
