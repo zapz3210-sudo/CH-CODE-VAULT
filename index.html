@@ -7,59 +7,27 @@
 <title>CinderHex Code Vault</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#0a0c12;--panel:#111622;--panel2:#171e2d;--line:#273247;--text:#f4f7ff;--muted:#a5b1c7;--accent:#ff623f;--accent2:#ff9a54;--good:#68e0ad;--bad:#ff7d87}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2132 0%,var(--bg) 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+:root{--bg:#0a0c12;--panel:#111622;--panel2:#171e2d;--line:#273247;--text:#f4f7ff;--muted:#a5b1c7;--accent:#ff623f;--accent2:#ff9a54}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2132 0%,var(--bg) 55%);color:var(--text);font:16px/1.5 system-ui,sans-serif;min-height:100vh}
 header{border-bottom:1px solid var(--line);background:#0b0e16d9;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
 .wrap{width:min(1080px,calc(100% - 32px));margin:auto}
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
-.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:.2px}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--accent),#ffb05c);color:#1a1010;font-weight:1000;font-size:21px;box-shadow:0 6px 24px #ff623f33}
-button,input,textarea,select{font:inherit}button{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel2);color:var(--text);font-weight:700;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}button:hover{border-color:#ff896f;transform:translateY(-1px)}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #ff9a5477;outline-offset:2px}.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:0;color:#1b1010}.quiet{background:transparent}.danger{color:#ff9da4;border-color:#6b303b}.small{font-size:13px;padding:7px 10px}
-.hero{padding:46px 0 26px}.eyebrow{color:var(--accent2);font-size:12px;letter-spacing:2px;font-weight:900;text-transform:uppercase}.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-1.8px;margin:10px 0 14px}.hero h1 span{color:var(--accent2)}.hero p{max-width:660px;color:var(--muted);margin:0}
-.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 18px}.field{background:#0e1320;border:1px solid var(--line);border-radius:11px;color:var(--text);padding:12px 14px;min-width:0}.search{flex:1;min-width:220px}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.pill{font-size:13px;color:var(--muted);border:1px solid var(--line);padding:5px 10px;border-radius:999px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:14px;padding-bottom:48px}.code-card{background:linear-gradient(145deg,#151c2a,#101520);border:1px solid var(--line);border-radius:17px;padding:18px;min-width:0;transition: transform 0.1s;}.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.code-card h2{font-size:19px;margin:0 0 5px;overflow-wrap:anywhere}.category{font-size:12px;color:var(--accent2);font-weight:800;letter-spacing:.5px}.description{color:var(--muted);font-size:14px;min-height:42px;margin:12px 0}.code-box{position:relative;background:#090d15;border:1px solid #29344a;border-radius:10px;padding:13px 12px;color:#e6edff;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;white-space:pre-wrap;margin:14px 0; max-height: 250px; overflow-y: auto;}.card-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.count{font-size:12px;color:var(--muted)}.empty{border:1px dashed var(--line);border-radius:15px;text-align:center;padding:38px;color:var(--muted);grid-column:1/-1}
-footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;padding:20px 0 30px}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#eafbf3;color:#10261d;border-radius:999px;padding:11px 17px;font-weight:800;box-shadow:0 8px 35px #0007;z-index:20;max-width:calc(100% - 24px);text-align:center;transition: opacity 0.3s; opacity: 1;}
-.toast.hidden{opacity: 0; pointer-events: none;}
-.hidden{display:none!important;}
-
-/* Auth Panel Styles */
-.auth-panel {
-  background: var(--panel2);
-  border: 1px solid var(--line);
-  border-radius: 17px;
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 30px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.auth-panel h2 { margin-top: 0; color: var(--accent2); }
-.auth-panel input { width: 100%; margin-bottom: 15px; }
-.auth-panel .inline-actions { display: flex; gap: 10px; justify-content: center; }
-
-/* Animations */
-@keyframes shake {
-  0%, 100% {transform: translate(0,0);}
-  25% {transform: translate(-6px, 6px);}
-  50% {transform: translate(6px, -6px);}
-  75% {transform: translate(-6px, -6px);}
-}
-.anim-shake { animation: shake 0.3s ease-in-out; }
-@keyframes flashScreen {
-  0% {background-color: #ffffff;}
-  100% {background-color: var(--bg);}
-}
-.anim-flash { animation: flashScreen 0.4s ease-out; }
-.particle { position: fixed; pointer-events: none; z-index: 9999; font-size: 24px; }
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-  100% { opacity: 0; transform: translateY(-120px) scale(1.5) rotate(45deg); }
-}
-@keyframes crawlDown {
-  0% { opacity: 1; transform: translateY(-20px) scale(1); }
-  100% { opacity: 0; transform: translateY(120px) scale(0.5); }
-}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:.2px}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--accent),#ffb05c);color:#1a1010;font-weight:1000;font-size:21px}
+button,input,select{font:inherit}button{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel2);color:var(--text);font-weight:700;cursor:pointer;transition:transform .12s,border-color .12s}button:hover{border-color:#ff896f;transform:translateY(-1px)}
+.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:0;color:#1b1010}.quiet{background:transparent}
+.hero{padding:30px 0 20px;text-align:center;}.hero h1{font-size:clamp(28px,5vw,46px);margin:10px 0}.hero p{color:var(--muted);margin:0 auto 20px;max-width:600px}
+.toolbar{display:flex;gap:12px;justify-content:center;margin-bottom:30px}.field{background:#0e1320;border:1px solid var(--line);border-radius:11px;color:var(--text);padding:12px;min-width:200px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;padding-bottom:48px}
+.code-card{background:linear-gradient(145deg,#151c2a,#101520);border:1px solid var(--line);border-radius:16px;padding:20px;height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:transform 0.1s}
+.code-card h2{font-size:18px;margin:0 0 10px;color:#fff}
+.category{font-size:12px;color:var(--accent2);font-weight:800;text-transform:uppercase;margin-bottom:auto}
+.copy-btn{width:100%;margin-top:15px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#eafbf3;color:#10261d;border-radius:999px;padding:11px 17px;font-weight:800;box-shadow:0 8px 35px #0007;z-index:20;transition:opacity 0.3s}
+.hidden{display:none!important;opacity:0;pointer-events:none}
+.auth-panel{background:var(--panel2);border:1px solid var(--line);border-radius:17px;max-width:350px;margin:60px auto;padding:30px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.auth-panel input{width:100%;margin-bottom:15px}.auth-panel .inline-actions{display:flex;gap:10px;justify-content:center}
+.particle{position:fixed;pointer-events:none;z-index:9999;font-size:24px}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-120px) scale(1.5) rotate(45deg)}}
 </style>
 </head>
 <body>
@@ -69,36 +37,26 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;paddin
 </div></header>
 
 <main class="wrap">
-  <!-- Supabase Login Gate -->
   <div id="authSection" class="auth-panel">
-    <h2>Vault Authentication</h2>
-    <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Sign in to access CinderHex's private scripts.</p>
+    <h2 style="margin-top:0;color:var(--accent2)">Vault Login</h2>
     <input type="email" id="emailInput" class="field" placeholder="Email Address" required>
     <input type="password" id="passwordInput" class="field" placeholder="Password" required>
-    <div class="inline-actions">
-      <button class="quiet" id="signUpBtn">Sign Up</button>
-      <button class="primary" id="logInBtn">Log In</button>
-    </div>
+    <div class="inline-actions"><button class="quiet" id="signUpBtn">Sign Up</button><button class="primary" id="logInBtn">Log In</button></div>
   </div>
 
-  <!-- Hidden Vault Content -->
   <div id="vaultMain" class="hidden">
     <section class="hero">
-      <div class="eyebrow">Creator tools • Community codes</div>
-      <h1>Find a code.<br><span>Copy. Create.</span></h1>
-      <p>A clean, authenticated vault for CinderHex codes. Search the collection, copy an API script with one click, and drop it straight into Bloxd.io.</p>
+      <h1>CinderHex <span>Arsenal</span></h1>
+      <p>Secure Bloxd.io script vault. Click any square to instantly copy the code.</p>
       <div class="toolbar">
-        <input id="search" class="field search" type="search" placeholder="Search codes, titles, or categories…" aria-label="Search codes">
-        <select id="categoryFilter" class="field" aria-label="Filter by category"><option value="">All categories</option></select>
+        <input id="search" class="field" type="search" placeholder="Search scripts...">
+        <select id="categoryFilter" class="field"><option value="">All Categories</option></select>
       </div>
-      <div class="pills"><span class="pill" id="codeTotal">0 codes</span><span class="pill">One-click copy</span><span class="pill">Secure</span></div>
     </section>
-    <section id="codeGrid" class="grid" aria-live="polite"></section>
+    <section id="codeGrid" class="grid"></section>
   </div>
 </main>
-
-<footer><div class="wrap">CinderHex Code Vault · Supabase Authenticated Edition.</div></footer>
-<div id="toast" class="toast hidden" role="status"></div>
+<div id="toast" class="toast hidden"></div>
 
 <script>
 (() => {
@@ -106,170 +64,73 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;paddin
   const $ = id => document.getElementById(id);
   let toastTimer;
 
-  // --------------------------------------------------------
-  // SUPABASE CONFIGURATION
-  // --------------------------------------------------------
-  const supabaseUrl = 'YOUR_SUPABASE_URL_HERE'; // <-- PASTE YOUR URL HERE
+  const supabaseUrl = 'YOUR_SUPABASE_URL_HERE';
   const supabaseKey = 'sb_publishable_PhE6B6xWU_Ozir2vZ_aoMQ_68-fqo2n';
   const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  // --------------------------------------------------------
-  // THE VAULT DATABASE
-  // --------------------------------------------------------
   const codes = [
-    {
-      id: "lightning-sword-script",
-      title: "Thunder-God Lightning Sword",
-      category: "Custom Weapons",
-      description: "Gold Sword right-click logic with explosive particle knockback and lingering fire. Replaces the Blub script.",
-      code: `function onRightClick(player, item) {
-  if(item.name === 'Gold Sword') {
-    spawnExplosion(player.x, player.y, player.z);
-    applyKnockback();
-  }
-}`
-    }
+    { id: "sword", title: "Thunder-God Sword", category: "Weapons", code: "function onRightClick(p, i) { if(i.name === 'Gold Sword') { spawnExplosion(p.x, p.y, p.z); applyKnockback(); } }" },
+    { id: "trident", title: "Explosive Trident", category: "Weapons", code: "onProjectileHit = (p) => { if(p.type=='Snowball') { spawnExplosion(); applyFire(); } }" },
+    { id: "spooder", title: "Spooder Monster", category: "Entities", code: "const spooder = new Entity('Spooder'); spooder.onPlayerDetect = () => startChase();" },
+    { id: "golem", title: "Animated Golem", category: "Entities", code: "function golemSlam() { playRoar(); applyKnockback(10); spawnParticles(); }" },
+    { id: "void", title: "Void Watcher Radar", category: "Entities", code: "function radarLoop() { let ore = findNearest('Diamond Ore'); spawnParticleBeam(ore.pos); }" },
+    { id: "floor", title: "The Floor Is Lying", category: "Game Modes", code: "function checkFloor(p) { if(p.standingOn == 'Maple Wood Planks') { dropPlayer(p); } }" },
+    { id: "gauntlet", title: "Gauntlet Wars", category: "Game Modes", code: "let teams = ['Red', 'Blue']; function initBases() { spawnCyberdome(); spawnMagmaCore(); }" },
+    { id: "touch", title: "Don't Touch The Line", category: "Game Modes", code: "let bounds = 80; function shrinkArena() { bounds -= 1; killOutsideBounds(bounds); }" }
   ];
 
-  function esc(value){ return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
-  
-  function notify(message){
-    $("toast").textContent = message; $("toast").classList.remove("hidden");
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2400);
-  }
+  function notify(msg){ $("toast").textContent=msg; $("toast").classList.remove("hidden"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$("toast").classList.add("hidden"), 2000); }
 
-  // --- AUTHENTICATION LOGIC ---
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      $("authSection").classList.add("hidden");
-      $("vaultMain").classList.remove("hidden");
-      $("authBtn").classList.remove("hidden");
-      render(); // Load vault when logged in
-    } else {
-      $("authSection").classList.remove("hidden");
-      $("vaultMain").classList.add("hidden");
-      $("authBtn").classList.add("hidden");
-    }
+    if (session) { $("authSection").classList.add("hidden"); $("vaultMain").classList.remove("hidden"); $("authBtn").classList.remove("hidden"); render(); }
+    else { $("authSection").classList.remove("hidden"); $("vaultMain").classList.add("hidden"); $("authBtn").classList.add("hidden"); }
   }
 
-  $("signUpBtn").addEventListener("click", async () => {
-    const email = $("emailInput").value;
-    const password = $("passwordInput").value;
-    if (!email || !password) return notify("Enter email and password!");
-    
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) notify("Error: " + error.message);
-    else notify("Account created! You can now log in.");
-  });
+  $("signUpBtn").onclick = async () => {
+    const { error } = await supabase.auth.signUp({ email: $("emailInput").value, password: $("passwordInput").value });
+    error ? notify(error.message) : notify("Account created! You can now log in.");
+  };
 
-  $("logInBtn").addEventListener("click", async () => {
-    const email = $("emailInput").value;
-    const password = $("passwordInput").value;
-    if (!email || !password) return notify("Enter email and password!");
-    
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) notify("Error: " + error.message);
-    else {
-      notify("Logged in securely.");
-      checkUser();
+  $("logInBtn").onclick = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email: $("emailInput").value, password: $("passwordInput").value });
+    error ? notify(error.message) : checkUser();
+  };
+
+  $("authBtn").onclick = async () => { await supabase.auth.signOut(); checkUser(); notify("Logged out."); };
+
+  function spawnParticles(x, y) {
+    for(let i=0; i<5; i++) {
+        const el = document.createElement('div'); el.textContent = '✨'; el.className = 'particle';
+        el.style.left = (x + (Math.random()*40-20))+'px'; el.style.top = (y + (Math.random()*40-20))+'px';
+        el.style.animation = 'floatUp 1.5s forwards'; document.body.appendChild(el); setTimeout(()=>el.remove(), 1500);
     }
-  });
-
-  $("authBtn").addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    $("emailInput").value = "";
-    $("passwordInput").value = "";
-    checkUser();
-    notify("Logged out.");
-  });
-
-  // --- VAULT UI & ANIMATION LOGIC ---
-  function spawnParticles(x, y, emoji, count, animName) {
-    for(let i=0; i<count; i++) {
-        const el = document.createElement('div');
-        el.textContent = emoji;
-        el.className = 'particle';
-        el.style.left = (x + (Math.random() * 40 - 20)) + 'px';
-        el.style.top = (y + (Math.random() * 40 - 20)) + 'px';
-        el.style.animationName = `${animName} 1.5s forwards`;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 1500);
-    }
-  }
-
-  function triggerCopyAnimation(title, buttonElement) {
-    const t = title.toLowerCase();
-    const rect = buttonElement.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top;
-
-    if (t.includes('lightning') || t.includes('thunder')) {
-        document.body.classList.add('anim-flash', 'anim-shake');
-        setTimeout(() => document.body.classList.remove('anim-flash', 'anim-shake'), 400);
-    } else if (t.includes('spooder')) {
-        spawnParticles(x, y, '🕷️', 8, 'crawlDown');
-    } else if (t.includes('blub') || t.includes('water')) {
-        spawnParticles(x, y, '💧', 6, 'floatUp');
-    } else if (t.includes('explosion') || t.includes('sword')) {
-        document.body.classList.add('anim-shake');
-        setTimeout(() => document.body.classList.remove('anim-shake'), 300);
-        spawnParticles(x, y, '💥', 5, 'floatUp');
-    } else {
-        spawnParticles(x, y, '✨', 5, 'floatUp');
-    }
-  }
-
-  function updateCategories(){
-    const select = $("categoryFilter"), current = select.value;
-    const categories = [...new Set(codes.map(c => String(c.category || "Other").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    select.innerHTML = '<option value="">All categories</option>' + categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
-    if(categories.includes(current)) select.value=current;
   }
 
   function render(){
-    updateCategories();
-    const term = $("search").value.trim().toLowerCase(), cat = $("categoryFilter").value;
-    const filtered = codes.filter(c => (!cat || c.category === cat) && (!term || [c.title,c.category,c.description,c.code].some(v=>String(v||"").toLowerCase().includes(term))));
-    $("codeTotal").textContent = `${codes.length} code${codes.length===1?"":"s"}`;
-    const grid = $("codeGrid");
-    if(!filtered.length){grid.innerHTML='<div class="empty">No codes found.</div>';return;}
-    grid.innerHTML = filtered.map(c => `
+    const term = $("search").value.toLowerCase(), cat = $("categoryFilter").value;
+    const cats = [...new Set(codes.map(c=>c.category))];
+    $("categoryFilter").innerHTML = '<option value="">All Categories</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join("");
+    $("categoryFilter").value = cat;
+
+    const filtered = codes.filter(c => (!cat || c.category === cat) && (!term || c.title.toLowerCase().includes(term)));
+    $("codeGrid").innerHTML = filtered.map(c => `
       <article class="code-card">
-        <div class="card-top"><div><h2>${esc(c.title)}</h2><div class="category">${esc(c.category || "Other")}</div></div></div>
-        <p class="description">${esc(c.description || "No description provided.")}</p>
-        <div class="code-box" id="code-${esc(c.id)}">${esc(c.code)}</div>
-        <div class="card-bottom"><button class="primary" data-copy="${esc(c.id)}"><span aria-hidden="true">▢</span> Copy code</button></div>
+        <div class="category">${c.category}</div>
+        <h2>${c.title}</h2>
+        <button class="primary copy-btn" data-copy="${c.id}">Copy Code</button>
       </article>`).join("");
   }
 
-  async function copyCode(id, buttonElement){
-    const c = codes.find(item => item.id === id); if(!c) return;
-    let success = false;
-    try {
-      await navigator.clipboard.writeText(c.code);
-      success = true;
-    } catch {
-      const area = document.createElement("textarea");
-      area.value = c.code; area.style.position="fixed"; area.style.opacity="0"; area.setAttribute("readonly","");
-      document.body.appendChild(area); area.select();
-      try { success = document.execCommand("copy"); } catch {}
-      area.remove();
-    }
-    if(!success){ notify("Copy was blocked by the browser. Select the code and copy it manually."); return; }
-    
-    triggerCopyAnimation(c.title, buttonElement);
-    notify("Code copied!");
-  }
+  $("codeGrid").onclick = async (e) => {
+    const btn = e.target.closest("[data-copy]"); if(!btn) return;
+    const c = codes.find(x => x.id === btn.dataset.copy);
+    await navigator.clipboard.writeText(c.code);
+    const r = btn.getBoundingClientRect(); spawnParticles(r.left + r.width/2, r.top);
+    notify(c.title + " copied!");
+  };
 
-  $("codeGrid").addEventListener("click",event=>{
-    const copy=event.target.closest("[data-copy]");
-    if(copy) copyCode(copy.dataset.copy, copy);
-  });
-
-  $("search").addEventListener("input",render); $("categoryFilter").addEventListener("change",render);
-  
-  // Run auth check on page load
+  $("search").oninput = render; $("categoryFilter").onchange = render;
   checkUser();
 })();
 </script>
